@@ -10,13 +10,20 @@ getwd()
 # import tps file
 dorsal.data = readland.tps("Data/dorsal_curve.TPS", specID = "ID", readcurves = T)
 
+# create a copy of the raw data
+raw = readland.tps("Data/dorsal_curve.TPS", specID = "ID", readcurves = T)
+
 # import classifiers
 classifiers.GM = read.csv("Data/classifiers_GM.csv", sep = ";", header = T)
 
-taxa = dimnames(dorsal.data)
-taxa = taxa[[3]]
-ordphyl = match(classifiers.GM$ID, taxa)
-which(is.na(ordphyl))
+taxa = dimnames(dorsal.data)    ## linha do tomate
+taxa = taxa[[3]]    ## linha do tomate
+ordphyl = match(classifiers.GM$ID, taxa)    ## linha do tomate
+which(is.na(ordphyl))    ## linha do tomate
+
+# make classifier as factor
+classifiers.GM$group = as.factor(classifiers.GM$group)
+is.factor(classifiers.GM$group)
 
 # curve
 semi.land = read.csv("Data/curveslide.csv")
@@ -24,6 +31,28 @@ semi.land = read.csv("Data/curveslide.csv")
 # procrustes fit
 dorsal.aligned = gpagen(dorsal.data, curves = semi.land, surfaces = NULL, PrinAxes = T,
                      max.iter = NULL, ProcD = F, Proj = T, print.progress = T)
+
+gpa.data = gpagen(raw, curves = semi.land, surfaces = NULL, Proj = T, ProcD = F, 
+                  print.progress = T)
+
+# plot aligned data
+plot(gpa.data)
+
+# allometric regression
+allom.reg = procD.lm(two.d.array(gpa.data$coords)~gpa.data$Csize, iter = 99)
+summary(allom.reg)
+
+plot(allom.reg)
+
+# MANOVA for Goodall's test
+Y = two.d.array(gpa.data$coords)
+MANO = procD.lm(Y~classifiers.GM$Testudines, iter = 99)
+summary(MANO)
+
+# visualize shape changes
+plotRefToTarget(gpa.data$coords[,,"Apalone_spinifera_1"], gpa.data$coords[,,"Apalone_spinifera_2"])
+
+
 
 # PCA
 PCA.dorsal = gm.prcomp(dorsal.aligned$coords)
@@ -104,10 +133,10 @@ adu.trion1 = PCA.dorsal$x[, 2][which((classifiers.GM$juvenile == "no") &
                                         (classifiers.GM$group == "Trionychia"))]
 adu.trion2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "no") & 
                                         (classifiers.GM$group == "Trionychia"))]
-adu.sand1 = PCA.dorsal$x[, 2][which((classifiers.GM$juvenile == "no") & 
-                                        (classifiers.GM$group == "Sandownidae"))]
-adu.sand2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "no") & 
-                                        (classifiers.GM$group == "Sandownidae"))]
+adu.angol1 = PCA.dorsal$x[, 2][which((classifiers.GM$juvenile == "no") & 
+                                        (classifiers.GM$group == "Angolachelonia"))]
+adu.angol2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "no") & 
+                                        (classifiers.GM$group == "Angolachelonia"))]
 others1 = PCA.dorsal$x[, 2][which(classifiers.GM$Testudines == "non_crown")]
 others2 = PCA.dorsal$x[, 1][which(classifiers.GM$Testudines == "non_crown")]
 
@@ -146,6 +175,12 @@ points(others1~others2, cex = 2, pch = 21, col = "gray23",
        bg = "gray23")
 
 
+# convert data matrix into array
+dorsal.data = as.data.frame(dorsal.data)
+arrayspecs(dorsal.data, p = 300, k )
+
+# plot coordinates of all specimens
+plotAllSpecimens(dorsal.aligned)
 
 
 
