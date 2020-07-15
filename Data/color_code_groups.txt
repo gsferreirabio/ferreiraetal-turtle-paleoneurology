@@ -1,0 +1,9 @@
+# Color code for groups
+Chelidae			darkgreen
+Chelonioidea		darkslateblue
+Chelydroidea		darkslategray4		
+Pelomedusoides		darkolivegreen3
+Sandownidae			gold3
+Testudinoidea		brown3
+Trionychia			darkorchid
+others				gray23
