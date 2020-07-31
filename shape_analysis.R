@@ -1,11 +1,17 @@
 ################################################################################
-# Script written for shape analyses of turtle endocasts
+# Script written for volume and shape analyses of turtle endocasts
 # Published in Ferreira et al. in press Paleoneurology book chapter
 ################################################################################
 
 ################################################################################
 # Linear measurements based analyses
 ###############################################################
+library(ape)
+library(geiger)
+library(nlme)
+library(phytools)
+library(paleotree)
+
 library(factoextra)
 library(ggplot2)
 
@@ -14,6 +20,73 @@ library(FactoMineR)
 library(ggfortify) # this lets ggplot2 know how to interpret PCA objects
 
 getwd()
+
+##############################################################
+# Voume Analyses
+##############################################################
+
+# Load the MCCT tree of Farina et al. in press
+MCCT = dget("Data/Evers_20M_MCCT.txt")
+plot(MCCT, cex = 0.2)
+
+# Load endocast volume raw data
+vol.data = read.table("Data/volume_data_clades.txt", header = T, row.names = 1)
+
+# Drop tips in tree not in data
+vol.MCCT = dropPaleoTip(MCCT, MCCT$tip.label[!(MCCT$tip.label %in% 
+                                                       rownames(vol.data))])
+plot(ladderize(vol.MCCT, right = F))  ## check the tree
+axisPhylo()
+
+name.check(vol.MCCT, vol.data)  ## check if names are the same
+
+# is there a correlation between endocast and box volume?
+plot(vol.data[,c("endocast_vol", "box_vol")])
+
+# extract columns
+endocast.vol = vol.data[, "endocast_vol"]
+box.vol = vol.data[, "box_vol"]
+clades = vol.data$large_clades
+
+# give names to the objects
+names(endocast.vol) = names(box.vol) = names(clades) = rownames(vol.data)
+
+# make a PGLS model of endocast volume ~ box.vol
+pglsModel = gls(endocast.vol ~ box.vol, correlation = corBrownian(phy = vol.MCCT),
+                data = vol.data, method = "ML")
+summary(pglsModel)
+
+plot(endocast.vol ~ box.vol)
+abline(coef(pglsModel))
+
+# make a PGLS model of endocast ~ box * clades
+pglsCladeModel = gls(endocast.vol ~ box.vol*clades, 
+                     correlation = corBrownian(phy = vol.MCCT), data = vol.data,
+                     method = "ML")
+summary(pglsCladeModel)
+
+# make a PGLS model of endocast ~ clades
+pglsClades = gls(endocast.vol ~ clades, correlation = corBrownian(phy = vol.MCCT),
+                 data = vol.data, method = "ML")
+summary(pglsClades)
+
+# for ancestral state estimate we divide endocast by box volume
+vol.index = endocast.vol/box.vol
+
+# ancestral states estimate
+# and also compute variances & 95% confidence intervals for each node
+fit.endocast.vol = fastAnc(vol.MCCT, vol.index, vars = TRUE, CI = TRUE)
+range(vol.index)
+
+# plot endocast/box volume on the tree
+obj = contMap(vol.MCCT, vol.index, plot=FALSE)
+obj = setMap(obj, colors=c("blue", "cyan", "green", "yellow", "red"))
+plot(obj, legend=0.7*max(nodeHeights(vol.MCCT)), fsize=c(0.7,0.9))
+
+##############################################################
+# Shape Analyses
+##############################################################
+
 
 # import data & prepare data
 linear.data = read.csv("Data/linear_data.csv", header = T, sep = ";", row.names = 1)
