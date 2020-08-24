@@ -1,23 +1,23 @@
-ID	large_clades	group	endocast_vol	box_vol
-Annemys_levensis	stem	Xinjiangchelyidae	1153	25097.4
-Apalone_spinifera	cryptodira	Trionychidae	3025	75362.3286
-Caretta_caretta	cryptodira	Cheloniidae	2590.88	50029.25696
-Carettochelys_insculpta	cryptodira	Carettochelyidae	1996.9	20117.76
-Chelodina_reimanni	pleurodira	Chelidae	760.1	12960
-Chelonia_mydas	cryptodira	Cheloniidae	7077.93	611520
-Chelydra_serpentina	cryptodira	Chelydridae	7345.72	271244
-Cuora_amboinensis	cryptodira	Geoemydidae	801.284	11327.04
-Emydura_subglobosa	pleurodira	Chelidae	1556.29	13125
-Emys_orbicularis	cryptodira	Emydidae	1456.5671	8342.831066
-Eubaena_cephalica	stem	Baenidae	3218.26	110853.6
-Kinosternon_subrubrum	cryptodira	Kinosternidae	382.89	7529.76081
-Macrochelys_temminckii	cryptodira	Chelydridae	9583.5	631680
-Malacochersus_tornieri	cryptodira	Testudinidae	1364.13	11760
-Naomichelys_speciosa	stem	Helochelydridae	9805.97	767637
-Pelodiscus_sinensis	cryptodira	Trionychidae	707.23	31860
-Platysternon_megacephalum	cryptodira	Platysternidae	898.13	69300
-Podocnemis_unifilis	pleurodira	Podocnemididae	1732.45	47838
-Proganochelys_quenstedti	stem	Testudinata	3790.56	244440
-Rhinochelys_pulchriceps	cryptodira	Protostegidae	227.394	4708.258
-Sandownia_harrisi	pleurodira	Sandownidae	3524.21	97061.12
-Xinjiangchelys_radiplicatoides	stem	Xinjiangchelyidae	1514.28	51300
+ID	large_clades	group	endocast_vol	box_vol	eb_vol
+Annemys_levensis	stem	Xinjiangchelyidae	1153	25097.4	0.0459262659277853
+Apalone_spinifera	cryptodira	Trionychidae	3025	75362.3286	0.0401412755709356
+Caretta_caretta	cryptodira	Cheloniidae	2590.88	50029.25696	0.0517872972264737
+Carettochelys_insculpta	cryptodira	Carettochelyidae	1996.9	20117.76	0.0992604565247821
+Chelodina_reimanni	pleurodira	Chelidae	760.1	12960	0.0586496913580247
+Chelonia_mydas	cryptodira	Cheloniidae	7077.93	611520	0.0115743229984301
+Chelydra_serpentina	cryptodira	Chelydridae	7345.72	271244	0.0270815944315819
+Cuora_amboinensis	cryptodira	Geoemydidae	801.284	11327.04	0.070740811368195
+Emydura_subglobosa	pleurodira	Chelidae	1556.29	13125	0.118574476190476
+Emys_orbicularis	cryptodira	Emydidae	1456.5671	8342.831066	0.174589067969744
+Eubaena_cephalica	stem	Baenidae	3218.26	110853.6	0.0290316236910664
+Kinosternon_subrubrum	cryptodira	Kinosternidae	382.89	7529.76081	0.0508502208319151
+Macrochelys_temminckii	cryptodira	Chelydridae	9583.5	631680	0.0151714475683891
+Malacochersus_tornieri	cryptodira	Testudinidae	1364.13	11760	0.115997448979592
+Naomichelys_speciosa	stem	Helochelydridae	9805.97	767637	0.0127742279228333
+Pelodiscus_sinensis	cryptodira	Trionychidae	707.23	31860	0.0221980539861896
+Platysternon_megacephalum	cryptodira	Platysternidae	898.13	69300	0.0129600288600289
+Podocnemis_unifilis	pleurodira	Podocnemididae	1732.45	47838	0.0362149337346879
+Proganochelys_quenstedti	stem	Testudinata	3790.56	244440	0.015507118311242
+Rhinochelys_pulchriceps	cryptodira	Protostegidae	227.394	4708.258	0.0482968435459569
+Sandownia_harrisi	pleurodira	Sandownidae	3524.21	97061.12	0.0363091833269593
+Xinjiangchelys_radiplicatoides	stem	Xinjiangchelyidae	1514.28	51300	0.0295181286549708
