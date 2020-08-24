@@ -12,6 +12,7 @@ library(nlme)
 library(phytools)
 library(paleotree)
 library(rcompanion)
+library(geomorph)
 
 getwd()
 
@@ -230,7 +231,6 @@ dev.off()
 # Semilandmark (outline) based analyses
 # Dorsal view data
 ################################################################################
-library(geomorph)
 
 # import tps file
 dorsal.raw.data = readland.tps("Data/dorsal_curve.TPS", specID = "ID", readcurves = T)
