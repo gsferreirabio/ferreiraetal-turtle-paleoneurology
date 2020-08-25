@@ -4,7 +4,21 @@
 #
 # This script does:
 # 1. Volume analyses:
-#       1a. pGLS
+#       1a. PGLS model of endocast volume ~ box volume
+#		1b. PGLS model of endocast volume ~ box volume * clades (Pleurodira/Cryptodira/Stem)
+#		1c. PGLS model of endocast volume ~ clades (Pleurodira/Cryptodira/Stem)
+#		1d. Ancestral states and character evolution
+# 		1e. linear regression & anova of brain & endocast volumes
+#
+# 2. Shape Analyses with linear measurements
+#		2a. PCA 
+#		2b. boxplots
+# 3. Semilandmark (outline) analyses
+#		3a. PCA 
+#		3b. simple allometric regression
+#		3c. age group allometric
+#		3d. ontogenetic allometry
+# 4. 3-dimensional analyses
 ################################################################################
 
 ################################################################################
