@@ -159,6 +159,8 @@ res.BrEn = summary(reg.BrainEndo)
 # export anova table
 write.table(anova(reg.BrainEndo), "results/anova_br_endo_vol.txt", sep = ",")
 
+cor.test(BrainEndoVol$brain, BrainEndoVol$endocast, method = "pearson")
+
 # plot 
 plot(BrainEndoVol$brain ~ BrainEndoVol$endocast, bty = "l", pch = 18,
      xlab = "log-transformed Endocast volume", ylab = "log-transformed Brain volume")
