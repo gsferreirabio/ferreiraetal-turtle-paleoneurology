@@ -1,6 +1,10 @@
 ################################################################################
 # Script written for volume and shape analyses of turtle endocasts
 # Published in Ferreira et al. in press Paleoneurology book chapter
+#
+# This script does:
+# 1. Volume analyses:
+#       1a. pGLS
 ################################################################################
 
 ################################################################################
@@ -21,7 +25,7 @@ getwd()
 load(file = "results/Ferreiraetal.RData")
 
 ##############################################################
-# Voume Analyses
+# 1. Voume Analyses
 ##############################################################
 
 # Load the MCCT tree of Farina et al. in press
@@ -67,14 +71,16 @@ qqline(eb.vol)
 eb.volLog = log(eb.vol)
 plotNormalHistogram(eb.volLog)
 
-# give names to the objects
+# apply names
 names(endocastLog) = names(boxLog) = names(eb.volLog) = rownames(vol.data)
 names(clades) = rownames(vol.data)
 
-# make a PGLS model of endocast volume ~ box.vol
+################################################################################
+# 1a. PGLS model: endocast volume ~ box.vol
 pglsModel = gls(endocastLog ~ boxLog, correlation = corBrownian(phy = vol.MCCT),
                 data = vol.data, method = "ML")
 summary(pglsModel)
+anova(pglsModel)
 write.table(as.character(summary(pglsModel)), "results/pglsEndoBox.txt")
 
 # plot log-transformed data with pglsModel line
@@ -87,20 +93,25 @@ plot(endocast.vol ~ box.vol, xlab = "Box volume",
      ylab = "Endocast volume")
 abline(lm(endocast.vol ~ box.vol))
 
-# make a PGLS model of endocast ~ box * clades
+################################################################################
+# 1b. PGLS model: endocast ~ box * clades (Pleurodira/Cryptodira/Stem)
 pglsCladeModel = gls(endocastLog ~ boxLog*clades, 
                      correlation = corBrownian(phy = vol.MCCT), data = vol.data,
                      method = "ML")
 summary(pglsCladeModel)
+anova(pglsCladeModel)
 write.table(as.character(summary(pglsCladeModel)), "results/pglsCladeModel.txt")
 
-# make a PGLS model of endocast ~ clades
+################################################################################
+# 1c. PGLS model: endocast ~ clades
 pglsClades = gls(endocastLog ~ clades, correlation = corBrownian(phy = vol.MCCT),
                  data = vol.data, method = "ML")
 summary(pglsClades)
+anova(pglsClades)
 write.table(as.character(summary(pglsClades)), "results/pglsClades.txt")
 
-# ancestral states estimate
+################################################################################
+# 1d. ancestral states estimate
 # and also compute variances & 95% confidence intervals for each node
 fit.EBvol = fastAnc(vol.MCCT, eb.volLog, vars = TRUE, CI = TRUE)
 range(eb.volLog)
@@ -119,7 +130,8 @@ plot(obj, main = "Trait", legend=0.5*max(nodeHeights(vol.MCCT)), fsize=c(0.7,0.9
 
 dev.off()
 
-# brain vs. endocast volume comparison
+################################################################################
+# 1e. brain vs. endocast volume comparison
 BrainEndoVol = read.csv("Data/brain_endocast_vol.csv", header = T, sep = ",")
 BrainEndoVol$endocast = log(BrainEndoVol$endocast)
 BrainEndoVol$brain = log(BrainEndoVol$brain)
@@ -143,17 +155,14 @@ R^2 = ", round(res.BrEn$r.squared, digits = 3)), bty = "n")
 abline(reg.BrainEndo, col = "#AA3377", lwd = 1.5)
 
 
-##############################################################
-# Shape Analyses
-##############################################################
-
+################################################################################
+# 2. Shape Analyses with linear measurements
 # import data & prepare data
 linear.data = read.csv("Data/linear_data.csv", header = T, sep = ";", row.names = 1)
 
 lin.meas = linear.data[ , 5:15]
 rownames(lin.meas) = rownames(linear.data)
 
-##############################################################
 # exploring data
 plot(lin.meas$ML, lin.meas$WOB)
 plot(lin.meas$ML, lin.meas$WCH)
@@ -178,7 +187,8 @@ for (i in 1:length(lin.meas)) {
 rownames(lin.measLog) = rownames(lin.meas)
 colnames(lin.measLog) = colnames(lin.meas)
 
-# PC Analyses
+################################################################################
+# 2a. PC Analyses
 lin.pca = prcomp(lin.measLog)
 summary(lin.pca)
 
@@ -202,7 +212,8 @@ plot(lin.pca$x[, 1], lin.pca$x[, 2], xlab = "PC1 (75.2%)", ylab = "PC2 (18.0%)",
 text(lin.pca$x[, 2] ~ lin.pca$x[, 1], labels = rownames(lin.measLog), 
      cex = 0.6, pos = 4)
 
-# boxplot with brain vs. endocast measurement comparison
+################################################################################
+# 2b. boxplot with brain vs. endocast measurement comparison
 br_ec = read.table("Data/br_ec_measures.txt", header = T, sep = " ")
 br_ec$Model = as.factor(br_ec$Model)
 
@@ -228,9 +239,8 @@ legend("topright", legend = c("endocast", "brain"), col = c("#4477AA", "#EE6677"
 dev.off()
 
 ################################################################################
-# Semilandmark (outline) based analyses
+# 3. Semilandmark (outline) analyses
 # Dorsal view data
-################################################################################
 
 # import tps file
 dorsal.raw.data = readland.tps("Data/dorsal_curve.TPS", specID = "ID", readcurves = T)
@@ -279,8 +289,9 @@ text(PCA.dorsal$x[,2]~PCA.dorsal$x[,1], labels = taxa, cex = 0.3, pos = 4)
 legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n", 
        col = c("darkcyan", "brown2"), pt.bg = c("darkcyan", "brown2"), pch = c(21, 23))
 
-################################################################################
-# PCA different colors and points by groups & age
+
+
+# PCA plot: different colors and points by groups & age
 # objects for classifiers
 
 # Juvenile chelids
@@ -315,7 +326,6 @@ juv.trion2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "yes") &
                                         (classifiers.GM$group == "Trionychia"))]
 
 
-#########################
 # prepare points for plot
 adu.chelid1 = PCA.dorsal$x[, 2][which((classifiers.GM$juvenile == "no") & 
                                        (classifiers.GM$group == "Chelidae"))]
@@ -348,7 +358,8 @@ adu.angol2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "no") &
 others1 = PCA.dorsal$x[, 2][which(classifiers.GM$Testudines == "non_crown")]
 others2 = PCA.dorsal$x[, 1][which(classifiers.GM$Testudines == "non_crown")]
 
-############################
+
+
 # Plot all data before color
 plot(PCA.dorsal, axis1 = 1, axis2 = 2, cex = 0)
 
@@ -434,7 +445,7 @@ legend(x = "topleft", legend = legend.groups, cex = 0.9, bty = "n", pch = 20, pt
                "darkolivegreen3", "brown3", "darkorchid", "gray23"))
 
 
-# PCA colored by juveniles vs. adults
+# PCA plot colored by juveniles vs. adults
 plot(PCA.dorsal, axis1 = 1, axis2 = 2, cex = 0)
 points(PCA.dorsal$x[, 2][which(classifiers.GM$juvenile == "yes")]~PCA.dorsal$x[, 1]
        [which(classifiers.GM$juvenile == "yes")], cex = 1, pch = 23, 
@@ -450,7 +461,7 @@ legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n",
 dev.off()
 
 ################################################################################
-# allometric regression
+# 3b. simple allometric regression
 par(mfrow = c(1, 1))
 allom.reg = procD.lm(two.d.array(gpa.data$coords)~gpa.data$Csize, iter = 999)
 summary(allom.reg)
@@ -466,7 +477,7 @@ allom.plot = plotAllometry(allom.reg, size = gpa.data$Csize, method = "RegScore"
 text(allom.plot$plot.args$x, allom.plot$RegScore, labels = classifiers.GM$ID, 
      cex = 0.7, pos = 4)
 ################################################################################
-# shape~specimen age
+# 3c. age group allometry
 
 # gpa + classifiers data frame
 gpa.data.class = c(gpa.data, classifiers.GM)
@@ -476,7 +487,7 @@ age.reg = procD.lm(gpa.data.class$coords~gpa.data.class$juvenile, iter = 999)
 summary(age.reg)
 
 ################################################################################
-# ontogenetic trajectory analysis
+# 3d. ontogenetic trajectory analysis
 ################################################################################
 
 # load raw coordinates data
@@ -494,7 +505,6 @@ is.factor(classifiers.GM.ontog$group)
 gpa.ontog = gpagen(raw.ontog, curves = semi.land, surfaces = NULL, Proj = T, ProcD = F, 
                                print.progress = T)
 
-
 # PCA
 PCA.ontog = gm.prcomp(gpa.ontog$coords)
 
@@ -510,11 +520,42 @@ points(PCA.ontog$x[, 2][which(classifiers.GM.ontog$juvenile == "yes")]~
 legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n", 
        col = c("darkcyan", "brown2"), pt.bg = c("darkcyan", "brown2"), pch = c(21, 23))
 
-################################################################################
+
+# visualize shape changes
+ontogPC1.neg = plot(gpa.ontog$coords[,,"Emys_orbicularis_1"])
+
+ontogPC1.pos = plot(gpa.ontog$coords[, , "Emys_orbicularis_2"])
+
+# export to PDF
+pdf("results/ontogenetic_trajectories.pdf", height = 4, width = 8)
+# plot PCA results
+par(fig = c(0, 0.7, 0, 1), bty = "l", cex = 0.6, cex.axis = 0.8, cex.lab = 0.8,
+    cex.main = 0.8)
+plot(PCA.ontog, axis1 = 1, axis2 = 2, cex = 0)
+text(PCA.ontog$x[, 2]~PCA.ontog$x[, 1], labels = classifiers.GM.ontog$ID, cex = 0.5, pos = 1)
+points(PCA.ontog$x[, 2][which(classifiers.GM.ontog$juvenile == "no")]~
+               PCA.ontog$x[, 1][which(classifiers.GM.ontog$juvenile == "no")], 
+       cex = 1.5, pch = 21, col = "#009988", bg = "#009988")
+points(PCA.ontog$x[, 2][which(classifiers.GM.ontog$juvenile == "yes")]~
+               PCA.ontog$x[, 1][which(classifiers.GM.ontog$juvenile == "yes")], 
+       cex = 1.5, pch = 23, col = "#CC3311", bg = "#CC3311")
+legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n", 
+       col = c("#009988", "#CC3311"), pt.bg = c("#009988", "#CC3311"), pch = c(21, 23))
+
+# plot shape changes
+par(fig = c(0.7, 1, 0, 0.5), new = T, cex = 0.3, cex.main = 1, axes = F)
+plot(gpa.ontog$coords[, , "Emys_orbicularis_2"], main = "Juvenile [PC1 > 0]", pch = 23, 
+                    col = "#CC3311", xlab = "", ylab = "", axes = F)
+
+par(fig = c(0.7, 1, 0.5, 0.9), new = T, cex = 0.3, cex.main = 1, axes = F)
+plot(gpa.ontog$coords[,,"Emys_orbicularis_1"], main = "Adult [PC1 < 0]", pch = 21, 
+     col = "#009988", xlab = "", ylab = "", axes = F)
+
+dev.off()
+
 # ontogenetic regression
 ontog.reg = procD.lm(two.d.array(gpa.ontog$coords)~gpa.ontog$Csize, iter = 999)
 summary(ontog.reg)
-
 
 # export anova table 
 anovaOntogReg = anova(ontog.reg)
@@ -542,7 +583,7 @@ legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n",
 
 
 ################################################################################
-# 3D PGA data
+# 4. 3-dimensional analyses
 tridim.data = read.table("Data/turtle_endocasts_procrustes.txt", header = T)
 ID_string = rownames(lin.meas)
 ID_string = ID_string[-30]
@@ -568,8 +609,10 @@ tridim.data$coord51 = as.numeric(tridim.data$coord51)
 PCA.3d = gm.prcomp(tridim.data)
 
 
+
+
 ################################################################################
-# plot figure
+# plot final figure
 
 pdf("results/figure_quantitative.pdf", height = 8, width = 8)
 par(mfrow = c(2, 2), bty = "l")
