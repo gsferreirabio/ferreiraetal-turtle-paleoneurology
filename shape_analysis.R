@@ -34,7 +34,6 @@ library(geomorph)
 
 getwd()
 
-
 # Load image
 load(file = "results/Ferreiraetal.RData")
 
@@ -262,7 +261,7 @@ dev.off()
 dorsal.raw.data = readland.tps("Data/dorsal_curve.TPS", specID = "ID", readcurves = T)
 
 # import classifiers
-classifiers.GM = read.csv("Data/classifiers_GM.csv", sep = ";", header = T)
+classifiers.GM = read.csv("Data/classifiers_GM.csv", sep = " ", header = T)
 
 # make classifier as factor
 classifiers.GM$group = as.factor(classifiers.GM$group)
@@ -280,17 +279,26 @@ gpa.data = gpagen(dorsal.raw.data, curves = semi.land, surfaces = NULL, PrinAxes
 # plot aligned data
 plot(gpa.data)
 
-# visualize shape changes
-PC1.neg = plot(gpa.data$coords[,, "Proganochelys_quenstedti_2"])
-
-PC1.pos = plot(gpa.data$coords[, , "Podocnemis_erythrocephala"])
-
-PC2.neg = plot(gpa.data$coords[,, "Yuraramirim_montealtensis"])
-        
-PC2.pos = plot(gpa.data$coords[,, "Bothremys_cooki"])
-
 # PCA
 PCA.dorsal = gm.prcomp(gpa.data$coords)
+
+# plot extremes PC1
+med = mshape(gpa.data$coords)  # medium shape
+
+PC1 = PCA.dorsal$x[,1]
+preds1 = shape.predictor(gpa.data$coords, x= PC1, Intercept = F, pred1 = min(PC1),
+                         pred2 = max(PC1)) # PC 1 extremes
+
+plotRefToTarget(med, preds1$pred1)
+plotRefToTarget(med, preds1$pred2)
+
+# plot extremes PC2
+PC2 = PCA.dorsal$x[,2]
+preds2 = shape.predictor(gpa.data$coords, x= PC2, Intercept = F, pred1 = min(PC2), 
+                         pred2 = max(PC2)) # PC 2 extremes
+
+plotRefToTarget(med, preds2$pred1)
+plotRefToTarget(med, preds2$pred2)
 
 # PCA colored by juveniles vs. adults
 par(mfrow = c(1, 1))
@@ -301,7 +309,7 @@ points(PCA.dorsal$x[, 2][which(classifiers.GM$juvenile == "yes")]~PCA.dorsal$x[,
 points(PCA.dorsal$x[, 2][which(classifiers.GM$juvenile == "no")]~PCA.dorsal$x[, 1]
        [which(classifiers.GM$juvenile == "no")], cex = 1, pch = 21, 
        col = "darkcyan", bg = "darkcyan")
-text(PCA.dorsal$x[,2]~PCA.dorsal$x[,1], labels = taxa, cex = 0.3, pos = 4)
+text(PCA.dorsal$x[,2]~PCA.dorsal$x[,1], labels = rownames(gpa.data$data), cex = 0.3, pos = 4)
 legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n", 
        col = c("darkcyan", "brown2"), pt.bg = c("darkcyan", "brown2"), pch = c(21, 23))
 
@@ -373,7 +381,6 @@ adu.angol2 = PCA.dorsal$x[, 1][which((classifiers.GM$juvenile == "no") &
                                         (classifiers.GM$group == "Angolachelonia"))]
 others1 = PCA.dorsal$x[, 2][which(classifiers.GM$Testudines == "non_crown")]
 others2 = PCA.dorsal$x[, 1][which(classifiers.GM$Testudines == "non_crown")]
-
 
 
 # Plot all data before color
@@ -481,7 +488,6 @@ dev.off()
 par(mfrow = c(1, 1))
 allom.reg = procD.lm(two.d.array(gpa.data$coords)~gpa.data$Csize, iter = 999)
 summary(allom.reg)
-
 plot(allom.reg)
 
 # plot residuals
@@ -517,7 +523,6 @@ classifiers.GM.ontog = read.csv("Data/classifiers_GM_ontog.csv", header = T, sep
 classifiers.GM.ontog$group = as.factor(classifiers.GM.ontog$group)
 is.factor(classifiers.GM.ontog$group)
 
-
 gpa.ontog = gpagen(raw.ontog, curves = semi.land, surfaces = NULL, Proj = T, ProcD = F, 
                                print.progress = T)
 
@@ -538,9 +543,23 @@ legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n",
 
 
 # visualize shape changes
-ontogPC1.neg = plot(gpa.ontog$coords[,,"Emys_orbicularis_1"])
+# plot extremes PC1
+med.ontog = mshape(gpa.ontog$coords)  # medium shape
 
-ontogPC1.pos = plot(gpa.ontog$coords[, , "Emys_orbicularis_2"])
+PC1.ontog = PCA.ontog$x[,1]
+preds.ontog1 = shape.predictor(gpa.ontog$coords, x= PC1.ontog, Intercept = F, 
+                         pred1 = min(PC1.ontog), pred2 = max(PC1.ontog)) # PC 1 extremes
+
+plotRefToTarget(med.ontog, preds.ontog1$pred1)
+plotRefToTarget(med.ontog, preds.ontog1$pred2)
+
+# plot extremes PC2
+PC2.ontog = PCA.ontog$x[,2]
+preds.ontog2 = shape.predictor(gpa.ontog$coords, x= PC2.ontog, Intercept = F, 
+                         pred1 = min(PC2.ontog), pred2 = max(PC2.ontog)) # PC 2 extremes
+
+plotRefToTarget(med, preds.ontog2$pred1)
+plotRefToTarget(med, preds.ontog2$pred2)
 
 # export to PDF
 pdf("results/ontogenetic_trajectories.pdf", height = 4, width = 8)
@@ -560,12 +579,13 @@ legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n",
 
 # plot shape changes
 par(fig = c(0.7, 1, 0, 0.5), new = T, cex = 0.3, cex.main = 1, axes = F)
-plot(gpa.ontog$coords[, , "Emys_orbicularis_2"], main = "Juvenile [PC1 > 0]", pch = 23, 
-                    col = "#CC3311", xlab = "", ylab = "", axes = F)
+par(fig = c(0.7, 1, 0.5, 1), new = T, cex = 0.3, cex.main = 1, axes = F)
+plotRefToTarget(med.ontog, preds.ontog1$pred2, method = "points", useRefPts = F)
+title(main = "Juvenile - PC1 > 0")
 
-par(fig = c(0.7, 1, 0.5, 0.9), new = T, cex = 0.3, cex.main = 1, axes = F)
-plot(gpa.ontog$coords[,,"Emys_orbicularis_1"], main = "Adult [PC1 < 0]", pch = 21, 
-     col = "#009988", xlab = "", ylab = "", axes = F)
+par(fig = c(0.7, 1, 0, 0.5), new = T, cex = 0.3, cex.main = 1, axes = F)
+plotRefToTarget(med.ontog, preds.ontog1$pred1, method = "points", useRefPts = F)
+title(main = "Juvenile - PC1 < 0")
 
 dev.off()
 
@@ -577,6 +597,7 @@ summary(ontog.reg)
 anovaOntogReg = anova(ontog.reg)
 write.table(anovaOntogReg$table, "results/anova_ontog_regres.txt", sep = ",")
 
+par(mfrow = c(1, 1))
 plot(ontog.reg)
 
 # plot residuals
@@ -600,31 +621,103 @@ legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n",
 
 ################################################################################
 # 4. 3-dimensional analyses
-tridim.data = read.table("Data/turtle_endocasts_procrustes.txt", header = T)
+tridim.gpa = read.table("Data/endocast_landmarks.csv", header = T, row.names = 1, sep = ",")
+
+# extract and use same names as other objects
 ID_string = rownames(lin.meas)
 ID_string = ID_string[-30]
-rownames(tridim.data) = ID_string
-class(tridim.data$coord1)
-# take a look
-class(tridim.data)
-dim(tridim.data)
-
-warningMessages = ""
-for (i in 1:length(tridim.data)) {
-        if(is.numeric(tridim.data[[i]])){
-                next
-        }
-        else{
-                warning("The following column is not numeric: ", i)
-        }
-}
-warnings()
-tridim.data$coord51 = as.numeric(tridim.data$coord51)
+rownames(tridim.gpa) = ID_string
 
 # PCA
-PCA.3d = gm.prcomp(tridim.data)
+PCA.3d = gm.prcomp(tridim.gpa)
+plot(PCA.3d)
+
+# objects for classifiers
+classifiers.3d = read.table("Data/classifiers3d.csv", header = T, sep = ",")
+
+# colors: juvenile vs. adults
+plot(PCA.3d, axis1 = 1, axis2 = 2, cex = 0)
+points(PCA.3d$x[, 2][which(classifiers.3d$juvenile == "yes")]~PCA.3d$x[, 1]
+       [which(classifiers.3d$juvenile == "yes")], cex = 1, pch = 23, 
+       col = "brown2", bg = "brown2")
+points(PCA.3d$x[, 2][which(classifiers.3d$juvenile == "no")]~PCA.3d$x[, 1]
+       [which(classifiers.3d$juvenile == "no")], cex = 1, pch = 21, 
+       col = "darkcyan", bg = "darkcyan")
+text(PCA.3d$x[,2]~PCA.3d$x[,1], labels = rownames(tridim.gpa), cex = 0.5, pos = 4)
+legend(x = "topleft", legend = c("adult", "juvenile"), bty = "n", 
+       col = c("darkcyan", "brown2"), pt.bg = c("darkcyan", "brown2"), pch = c(21, 23))
 
 
+# Pleurodira
+juv.pleuro.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "yes") & 
+                                        (classifiers.3d$group == "Pleurodira"))]
+juv.pleuro.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "yes") & 
+                                         (classifiers.3d$group == "Pleurodira"))]
+adu.pleuro.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "no") & 
+                                        (classifiers.3d$group == "Pleurodira"))]
+adu.pleuro.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "no") & 
+                                         (classifiers.3d$group == "Pleurodira"))]
+
+
+# Trionychia
+juv.trion.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "yes") & 
+                                       (classifiers.3d$group == "Trionychia"))]
+juv.trion.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "yes") & 
+                                       (classifiers.3d$group == "Trionychia"))]
+adu.trion.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "no") & 
+                                       (classifiers.3d$group == "Trionychia"))]
+adu.trion.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "no") & 
+                                       (classifiers.3d$group == "Trionychia"))]
+
+# Durocryptodira
+juv.duro.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "yes") & 
+                                      (classifiers.3d$group == "Durocryptodira"))]
+juv.duro.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "yes") & 
+                                       (classifiers.3d$group == "Durocryptodira"))]
+adu.duro.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "no") & 
+                                      (classifiers.3d$group == "Durocryptodira"))]
+adu.duro.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "no") & 
+                                      (classifiers.3d$group == "Durocryptodira"))]
+
+# Others
+juv.other.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "yes") & 
+                                       (classifiers.3d$group == "Others"))]
+juv.other.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "yes") & 
+                                       (classifiers.3d$group == "Others"))]
+adu.other.3d1 = PCA.3d$x[, 1][which((classifiers.3d$juvenile == "no") & 
+                                       (classifiers.3d$group == "Others"))]
+adu.other.3d2 = PCA.3d$x[, 2][which((classifiers.3d$juvenile == "no") & 
+                                       (classifiers.3d$group == "Others"))]
+
+# colors & shapes: groups and jveniles vs. adults 
+plot(PCA.3d, axis1 = 1, axis2 = 2, cex = 0)  ## empty plot
+
+# plot juveniles
+points(juv.pleuro.3d2~juv.pleuro.3d1, cex = 1, pch = 21, col = "#AA3377", 
+       bg = "#AA3377")
+points(juv.duro.3d2~juv.duro.3d1, cex = 1, pch = 22, col = "#AA3377", 
+       bg = "#AA3377")
+points(juv.trion.3d2~juv.trion.3d1, cex = 1, pch = 23, col = "#AA3377", 
+       bg = "#AA3377")
+
+# plot adults colored points
+points(adu.pleuro.3d2~adu.pleuro.3d1, cex = 1, pch = 21, col = "#228833", 
+       bg = "#228833")
+points(adu.duro.3d2~adu.duro.3d1, cex = 1, pch = 22, col = "#228833", 
+       bg = "#228833")
+points(adu.trion.3d2~adu.trion.3d1, cex = 1, pch = 22, col = "#228833", 
+       bg = "#228833")
+points(adu.other.3d2~adu.other.3d1, cex = 1, pch = 25, col = "#228833", 
+       bg = "#228833")
+
+# plot legend for each group
+title("D", adj = 0)
+legendGroups = c("juvenile", "adult", "Pleurodira", "Durocryptodira", 
+                 "Trionychia", "Others")
+
+legend("topleft", legend = legendGroups, cex = 0.8, bty = "n", pch = c(21, 21, 1, 0, 5, 6), pt.cex = 1.5,
+       col = c("#AA3377", "#228833", "black", "black", "black", "black", "black", "black"),
+       pt.bg = c("#AA3377", "#228833", "black", "black", "black", "black", "black", "black"))
 
 
 ################################################################################
@@ -687,6 +780,37 @@ points(others1~others2, cex = 1, pch = 25, col = "#228833",
 title("C", adj = 0)
 legendGroups = c("juvenile", "adult", "Pleurodira", "Durocryptodira", 
                   "Trionychia", "Others")
+
+legend("topleft", legend = legendGroups, cex = 0.8, bty = "n", pch = c(21, 21, 1, 0, 5, 6), pt.cex = 1.5,
+       col = c("#AA3377", "#228833", "black", "black", "black", "black", "black", "black"),
+       pt.bg = c("#AA3377", "#228833", "black", "black", "black", "black", "black", "black"))
+
+# 4th plot: PCA 3D data
+# colors & shapes: groups and jveniles vs. adults 
+plot(PCA.3d, axis1 = 1, axis2 = 2, cex = 0)  ## empty plot
+
+# plot juveniles
+points(juv.pleuro.3d2~juv.pleuro.3d1, cex = 1, pch = 21, col = "#AA3377", 
+       bg = "#AA3377")
+points(juv.duro.3d2~juv.duro.3d1, cex = 1, pch = 22, col = "#AA3377", 
+       bg = "#AA3377")
+points(juv.trion.3d2~juv.trion.3d1, cex = 1, pch = 23, col = "#AA3377", 
+       bg = "#AA3377")
+
+# plot adults colored points
+points(adu.pleuro.3d2~adu.pleuro.3d1, cex = 1, pch = 21, col = "#228833", 
+       bg = "#228833")
+points(adu.duro.3d2~adu.duro.3d1, cex = 1, pch = 22, col = "#228833", 
+       bg = "#228833")
+points(adu.trion.3d2~adu.trion.3d1, cex = 1, pch = 22, col = "#228833", 
+       bg = "#228833")
+points(adu.other.3d2~adu.other.3d1, cex = 1, pch = 25, col = "#228833", 
+       bg = "#228833")
+
+# plot legend for each group
+title("D", adj = 0)
+legendGroups = c("juvenile", "adult", "Pleurodira", "Durocryptodira", 
+                 "Trionychia", "Others")
 
 legend("topleft", legend = legendGroups, cex = 0.8, bty = "n", pch = c(21, 21, 1, 0, 5, 6), pt.cex = 1.5,
        col = c("#AA3377", "#228833", "black", "black", "black", "black", "black", "black"),
