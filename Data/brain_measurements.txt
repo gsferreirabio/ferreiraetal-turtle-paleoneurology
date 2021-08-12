@@ -1,0 +1,12 @@
+Taxon WOB HOB WCH HCH WOR HOR
+Apalone_spinifera 6.16 3.36 10.99 5.92 4.8 2.87
+Caretta_caretta 4.29 3.4 6 3.33 5.7 3.56
+Chelydra_serpentina 3.72 2.39 5.57 4.43 2.96 1.55
+Cuora_amboinensis 4.61 2.72 5.47 3.85 3.26 1.76
+Emydura_subglobosa 4.4 2.99 5.92 4.38 3.14 1.69
+Emys_orbicularis 3.34 1.83 4.6 2.6 3.27 1.38
+Kinosternon_subrubrum 3.39 2.17 6.63 4.03 2.85 1.66
+Pelusios_niger 3.63 2.18 5.15 3.92 3.48 1.7
+Platysternon_megacephalum 4.58 2.39 8.32 5.34 4.65 2.42
+Podocnemis_erythrocephala 3.79 3.24 6.51 4.99 2.93 1.45
+Trachemys_scripta 5.13 3.6 11.96 6.73 6.32 2.69

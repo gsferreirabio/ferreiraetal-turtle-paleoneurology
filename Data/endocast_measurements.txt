@@ -1,0 +1,12 @@
+Taxon id juv WOB HOB WCH HCH WOR HOR ML
+Apalone_spinifera 1 y 6.34 3.56 11.36 6.48 5.63 3.89 17.01
+Caretta_caretta 2 y 4.46 3.75 6.46 3.43 6.08 3.89 10.52
+Chelydra_serpentina 3 y 3.82 2.71 5.68 4.65 3.37 1.75 11.01
+Cuora_amboinensis 4 y 4.87 2.93 5.69 4 3.52 1.94 9.76
+Emydura_subglobosa 5 y 4.82 3.21 5.99 4.56 3.66 1.88 10.12
+Emys_orbicularis 6 y 3.58 2.08 4.81 3.09 3.86 1.65 10.15
+Kinosternon_subrubrum 7 n 3.61 2.39 7.15 4.63 3.81 2.94 14.43
+Pelusios_niger 8 y 3.93 2.37 5.34 4.15 3.84 2.52 9.31
+Platysternon_megacephalum 9 n 5.05 4.12 8.74 6.05 5.96 4.17 20.05
+Podocnemis_erythrocephala 10 y 4.04 3.35 6.56 5.15 3.05 1.53 9.89
+Trachemys_scripta 11 n 5.39 4.36 12.1 7.21 9.88 6.83 32.12
